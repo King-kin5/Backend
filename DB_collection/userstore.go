@@ -1,0 +1,64 @@
+package dbcollection
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+
+	"Backend/project/Models"
+)
+
+type UserStore struct {
+	db *sql.DB
+}
+
+// GetUserByID implements store.Userstore.
+func (us *UserStore) GetUserByID(userID string) (*models.User, error) {
+	panic("unimplemented")
+}
+
+// UpdateUserCredit implements store.Userstore.
+func (us *UserStore) UpdateUserCredit(userID int, newCredit float64) error {
+	panic("unimplemented")
+}
+
+// UpdateUserInfoByID implements store.Userstore.
+func (us *UserStore) UpdateUserInfoByID(userID string, user *models.User) error {
+	panic("unimplemented")
+}
+
+func NewUserStore(db *sql.DB) *UserStore {
+	return &UserStore{
+		db: db,
+	}
+}
+func (us *UserStore) CreateUser(user *models.User) error {
+	query := "INSERT INTO users (name, phone_number, password,credit, area, address) VALUES ($1, $2, $3, $4, $5, $6)"
+	_, err := us.db.Exec(query, user.Name, user.PhoneNumber, user.Password, user.Credit, user.Area, user.Address)
+	if err != nil {
+        log.Println(err) // Add this line to log the error
+    }
+	return err
+}
+func (s *UserStore) GetUserByEmail(email string) (*models.User, error) {
+	query := "SELECT id, name, email, phone_number, password, credit, area, address FROM users WHERE email = $1"
+	row := s.db.QueryRow(query, email)
+
+	var user models.User
+	err := row.Scan(&user.ID, &user.Name,  &user.PhoneNumber, &user.Password, &user.Credit, &user.Area, &user.Address)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (s *UserStore) CheckDBConnection() error {
+	err := s.db.Ping()
+	if err != nil {
+		return fmt.Errorf("failed to connect to the database: %v", err)
+	}
+	return nil
+}
