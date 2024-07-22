@@ -24,9 +24,9 @@ func main() {
 	}
 	defer postgresDB.Close()
 
-	userStore := dbcollection.NewUserStore(postgresDB)
+	userstore := dbcollection.NewUserStore(postgresDB)
 
-    h := handler.NewHandler(userStore)
+    h := handler.NewHandler(userstore)
 	g :=r.Group("/api")
 	h.RegisterRoutes(g)
 

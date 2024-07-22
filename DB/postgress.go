@@ -13,7 +13,7 @@ var dbOnce sync.Once
 const (
 	// Update the connection string to match your PostgreSQL configuration
 	// Replace "user", "password", "host", "port", and "dbname" with your actual PostgreSQL credentials and database name
-	ConnectionStr = "user=postgres password=postgres host=localhost port=5432 dbname=manager sslmode=disable"
+	ConnectionStr = "user=postgres password=postgres host=localhost port=5432 dbname=funn sslmode=disable"
 )
 
 func GetPostgresDB() (*sql.DB, error) {
@@ -47,7 +47,6 @@ func createSchema(db *sql.DB) error {
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
 		email TEXT NOT NULL,
-        phone_number TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         credit FLOAT DEFAULT 0,
         area TEXT,

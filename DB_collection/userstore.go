@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
 	"Backend/project/Models"
 )
 
@@ -33,26 +32,41 @@ func NewUserStore(db *sql.DB) *UserStore {
 	}
 }
 func (us *UserStore) CreateUser(user *models.User) error {
-	query := "INSERT INTO users (name, phone_number, password,credit, area, address) VALUES ($1, $2, $3, $4, $5, $6)"
-	_, err := us.db.Exec(query, user.Name, user.PhoneNumber, user.Password, user.Credit, user.Area, user.Address)
-	if err != nil {
-        log.Println(err) // Add this line to log the error
+    query := "INSERT INTO users (name, email, password, credit, area, address) VALUES ($1, $2, $3, $4, $5, $6)"
+    _, err := us.db.Exec(query, user.Name, user.Email, user.Password, user.Credit, user.Area, user.Address)
+    if err != nil {
+		log.Printf("Error creating user: %v", err)
+         // Log the error
     }
-	return err
+    return err
 }
-func (s *UserStore) GetUserByEmail(email string) (*models.User, error) {
-	query := "SELECT id, name, email, phone_number, password, credit, area, address FROM users WHERE email = $1"
-	row := s.db.QueryRow(query, email)
+//func (us *UserStore) GetUserByPhoneNumber(phoneNumber float64) (*models.User, error) {
+	//user := new(models.User)
+	//err := us.db.QueryRow("SELECT * FROM users WHERE phone_number = $1", phoneNumber).Scan(
+		//&user.ID, &user.Name, &user.Email, &user.PhoneNumber, &user.Password, &user.Credit, &user.Area, &user.Address,
+	//)
+	//if err == sql.ErrNoRows {
+		//return nil, nil
+	//}
+	//if err != nil {
+		//return nil, err
+	//}
+	//return user, nil
+//}
 
-	var user models.User
-	err := row.Scan(&user.ID, &user.Name,  &user.PhoneNumber, &user.Password, &user.Credit, &user.Area, &user.Address)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
+func (us *UserStore) GetUserByEmail(email string) (*models.User, error) {
+    user := new(models.User)
+    query := `SELECT id, name, email, phone_number, password, credit, area, address FROM users WHERE email=$1`
+    row := us.db.QueryRow(query, email)
+    err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Credit, &user.Area, &user.Address)
+    if err!= nil {
+        if err == sql.ErrNoRows {
+            return nil, nil
+        }
+        log.Printf("Error scanning row: %v", err)
+        return nil, err
+    }
+    return user, nil
 }
 
 func (s *UserStore) CheckDBConnection() error {

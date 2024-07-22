@@ -17,5 +17,5 @@ return &Handler{
 }
 }
 func (h *Handler) BaseRouter(c echo.Context) error {
-	return c.JSON(http.StatusCreated, errors.New("welcome to Parham food"))
+	return c.JSON(http.StatusCreated, errors.New("welcome "))
 }
