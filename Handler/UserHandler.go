@@ -1,9 +1,11 @@
 package handler
+
 import (
 	"Backend/project/Models"
-	"net/http"
-	"github.com/labstack/echo/v4"
 	"log"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) UserSignUp(c echo.Context) error {
@@ -27,6 +29,11 @@ func (h *Handler) UserSignUp(c echo.Context) error {
 
 	if err := models.CheckPasswordLevel(user.Password); err != nil {
 		return c.JSON(http.StatusBadRequest, models.NewResponse(nil, err.Error(), false))
+	}
+
+	existingUserByName, _ := h.userStore.GetUserByName(user.Name)
+	if existingUserByName != nil {
+		return c.JSON(http.StatusBadRequest, models.NewResponse(nil, "this name is already registered", false))
 	}
 
 	// Check if the email already exists
@@ -95,7 +102,7 @@ func (h *Handler) UserLogin(c echo.Context) error {
     }
 
     if !models.CheckPasswordSame(user.Password, loginRequest.Password) {
-        log.Println("UserLogin: Invalid email or password")
+        log.Println("UserLogin: Invalid  password")
         return c.JSON(http.StatusUnauthorized, models.NewResponse(nil, "email or password is incorrect", false))
     }
 
@@ -103,4 +110,17 @@ func (h *Handler) UserLogin(c echo.Context) error {
     user.Password = ""
 
     return c.JSON(http.StatusOK, models.NewResponse(newUserResponse(user), "login successful", true))
+}
+func (h *Handler) Getprofile (c echo.Context) error {
+	name:=c.Param("username")
+	user,err:=h.userStore.GetUserByName(name)
+	 if err!=nil{
+		log.Println("Failed to find by name")
+		return c.JSON(http.StatusInternalServerError,models.NewResponse(nil, "internal server error", false))
+	 }
+	 if user==nil {
+		log.Printf("Username not found:%v",user)
+		return c.JSON(http.StatusNotFound,models.NewResponse(nil,"Username not found",false))
+	 }
+	 return c.JSON(http.StatusOK,models.NewResponse(newUserResponse(user),"User name found",true))
 }

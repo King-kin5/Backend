@@ -8,6 +8,7 @@ type Userstore interface{
 	//GetUserByPhoneNumber(phoneNumber float64) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(userID string) (*models.User, error)
+	GetUserByName(name string) (*models.User, error)
 	UpdateUserInfoByID(userID string, user *models.User) error
 	UpdateUserCredit(userID int, newCredit float64) error
 	CheckDBConnection() error

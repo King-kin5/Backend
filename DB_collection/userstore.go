@@ -68,6 +68,20 @@ func (us *UserStore) GetUserByEmail(email string) (*models.User, error) {
     }
     return user, nil
 }
+func (us *UserStore) GetUserByName(name string) (*models.User, error) {
+	var user models.User
+	query := "SELECT id, name, email, password, credit, area, address FROM users WHERE name = ?"
+	row := us.db.QueryRow(query, name)
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Credit, &user.Area, &user.Address)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
 
 func (s *UserStore) CheckDBConnection() error {
 	err := s.db.Ping()
