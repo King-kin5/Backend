@@ -4,9 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 )
+
+
 type(
 	//USERJWTConfig defines the config for UserJWT middleware.
 	USERJWTConfig struct {
@@ -44,7 +47,7 @@ func USERJWTFROMHEADER (config JWTConfig)echo.MiddlewareFunc{
 				 if config.Skipper!=nil{
 					return next(c)
 				 }
-				 return c.JSON(http.StatusUnauthorized,NewError(errors.New("Missing or malformed jwt")))
+				 return c.JSON(http.StatusUnauthorized,NewError(errors.New("missing or malformed jwt")))
 			}
 			token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

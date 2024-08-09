@@ -82,7 +82,7 @@ func (h *Handler) UserLogin(c echo.Context) error {
     log.Println("UserLogin: Received login request")
 
     loginRequest := new(struct {
-        Email    string `json:"email"`
+        Email    string `json:"email"` // Changed from Name to Email
         Password string `json:"password"`
     })
 
@@ -102,7 +102,7 @@ func (h *Handler) UserLogin(c echo.Context) error {
     }
 
     if !models.CheckPasswordSame(user.Password, loginRequest.Password) {
-        log.Println("UserLogin: Invalid  password")
+        log.Println("UserLogin: Invalid password")
         return c.JSON(http.StatusUnauthorized, models.NewResponse(nil, "email or password is incorrect", false))
     }
 
@@ -111,8 +111,9 @@ func (h *Handler) UserLogin(c echo.Context) error {
 
     return c.JSON(http.StatusOK, models.NewResponse(newUserResponse(user), "login successful", true))
 }
+
 func (h *Handler) Getprofile (c echo.Context) error {
-	name:=c.Param("username")
+	name:=c.Param("name")
 	user,err:=h.userStore.GetUserByName(name)
 	 if err!=nil{
 		log.Println("Failed to find by name")

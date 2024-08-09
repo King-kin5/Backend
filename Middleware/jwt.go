@@ -26,8 +26,7 @@ var (
 	ErrJWTInvalid = echo.NewHTTPError(http.StatusForbidden, "Invalid or expired JWT")
 )
 
-var JWTSecret = []byte("!!SECRET!!")
-
+var JWTSecret = []byte("d8c93c6a0672308a5cd95bb577cb634a6b97651f6a0100983afb605342536bc8")
 // GenerateJWT generates a JWT token.
 func GenerateJWT(email string) string {
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -67,8 +66,8 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 				return c.JSON(http.StatusForbidden, NewError(ErrJWTInvalid))
 			}
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				userID := uint(claims["id"].(float64))
-				c.Set("user", userID)
+				email := claims["email"]
+				c.Set("email", email)
 				return next(c)
 			}
 			return c.JSON(http.StatusForbidden, NewError(ErrJWTInvalid))

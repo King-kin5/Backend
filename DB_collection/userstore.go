@@ -56,10 +56,10 @@ func (us *UserStore) CreateUser(user *models.User) error {
 
 func (us *UserStore) GetUserByEmail(email string) (*models.User, error) {
     user := new(models.User)
-    query := `SELECT id, name, email, phone_number, password, credit, area, address FROM users WHERE email=$1`
+    query := `SELECT id, name, email, password, credit, area, address FROM users WHERE email=$1`
     row := us.db.QueryRow(query, email)
     err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Credit, &user.Area, &user.Address)
-    if err!= nil {
+    if err != nil {
         if err == sql.ErrNoRows {
             return nil, nil
         }
@@ -68,8 +68,9 @@ func (us *UserStore) GetUserByEmail(email string) (*models.User, error) {
     }
     return user, nil
 }
+
 func (us *UserStore) GetUserByName(name string) (*models.User, error) {
-	var user models.User
+	user := new(models.User)
 	query := "SELECT id, name, email, password, credit, area, address FROM users WHERE name = ?"
 	row := us.db.QueryRow(query, name)
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Credit, &user.Area, &user.Address)
@@ -80,7 +81,7 @@ func (us *UserStore) GetUserByName(name string) (*models.User, error) {
 		}
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
 }
 
 func (s *UserStore) CheckDBConnection() error {

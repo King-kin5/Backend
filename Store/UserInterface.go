@@ -5,7 +5,6 @@ import(
 
 type Userstore interface{
 	CreateUser(user *models.User) error
-	//GetUserByPhoneNumber(phoneNumber float64) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByName(name string) (*models.User, error)

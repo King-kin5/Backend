@@ -1,10 +1,16 @@
 package handler
-import(
+
+import (
+	 "Backend/project/Middleware"
+
 	"github.com/labstack/echo/v4"
 )
 const (
 	URLSignUp = "/signup"
 	URLUser   = "/user"
+	URLLogin="/login"
+	URLProfile="/profile"
+
 )
 
 func (h *Handler) RegisterRoutes(g *echo.Group) {
@@ -12,5 +18,18 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	//  routes
 	g.POST(URLUser+URLSignUp, h.UserSignUp)  // /user/signup
+	g.POST(URLUser+URLLogin,h.UserLogin) // /user/login
+
+
+	user:=g.Group(URLUser,middleware.USERJWTFROMHEADER(
+		middleware.JWTConfig{
+			Skipper: func(c echo.Context) bool {
+
+				return false
+			},
+			SigningKey: middleware.JWTSecret,
+		},
+	))
+	user.GET(URLUser+URLProfile,h.Getprofile)
 	
 }
