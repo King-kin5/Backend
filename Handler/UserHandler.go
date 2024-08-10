@@ -113,7 +113,7 @@ func (h *Handler) UserLogin(c echo.Context) error {
 }
 
 func (h *Handler) Getprofile (c echo.Context) error {
-	name:=c.Param("name")
+	name:=c.Param("Name")
 	user,err:=h.userStore.GetUserByName(name)
 	 if err!=nil{
 		log.Println("Failed to find by name")

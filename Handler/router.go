@@ -20,16 +20,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST(URLUser+URLSignUp, h.UserSignUp)  // /user/signup
 	g.POST(URLUser+URLLogin,h.UserLogin) // /user/login
 
-
-	user:=g.Group(URLUser,middleware.USERJWTFROMHEADER(
-		middleware.JWTConfig{
-			Skipper: func(c echo.Context) bool {
-
-				return false
-			},
-			SigningKey: middleware.JWTSecret,
-		},
-	))
-	user.GET(URLUser+URLProfile,h.Getprofile)
+user := g.Group(URLUser, middleware.USER(middleware.JWTSecret))
+user.GET(URLUser+URLProfile, h.Getprofile)
 	
 }
