@@ -4,50 +4,47 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 )
 
-
-type(
+type (
 	//USERJWTConfig defines the config for UserJWT middleware.
 	USERJWTConfig struct {
 		Skipper    Skipper
 		SigningKey interface{}
 	}
 	// Skipper defines a function to skip middleware.
- UserSkipper func(c echo.Context) bool
-// jwtExtractor defines a function to extract JWT token from the request.
-  UserjwtExtractor func(c echo.Context) (string, error)
-
+	UserSkipper func(c echo.Context) bool
+	// jwtExtractor defines a function to extract JWT token from the request.
+	UserjwtExtractor func(c echo.Context) (string, error)
 )
-var(
+
+var (
 	USERErrJWTInvalid = echo.NewHTTPError(http.StatusForbidden, "invalid or expired jwt")
-
 )
-func USER (key interface{})echo.MiddlewareFunc{
-	c:=JWTConfig{}
-	c.SigningKey=key
+
+func USER(key interface{}) echo.MiddlewareFunc {
+	c := JWTConfig{}
+	c.SigningKey = key
 	return USERJWTFROMHEADER(c)
 }
-//  returns a JWT middleware with config.
-func USERJWTFROMHEADER (config JWTConfig)echo.MiddlewareFunc{
-	 extractor:=jwtFromHeader("Authorzation","Token")
-	 return func(next echo.HandlerFunc) echo.HandlerFunc {
+
+// returns a JWT middleware with config.
+func USERJWTFROMHEADER(config JWTConfig) echo.MiddlewareFunc {
+	extractor := jwtFromHeader("Authorization", "Token")
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			auth,err:=extractor(c)
-			if auth ==""&& config.Skipper != nil &&config.Skipper(c) {
-				return next(c)
-			}
-			if err!=nil {
-				return c.JSON(http.StatusForbidden,USERErrJWTInvalid)
-			}
-			if auth ==""{
-				 if config.Skipper!=nil{
+			auth, err := extractor(c)
+			if auth == "" {
+				if config.Skipper != nil && config.Skipper(c) {
 					return next(c)
-				 }
-				 return c.JSON(http.StatusUnauthorized,NewError(errors.New("missing or malformed jwt")))
+				}
+				return c.JSON(http.StatusUnauthorized, NewError(errors.New("missing or malformed JWT")))
+			}
+			if err != nil {
+				return c.JSON(http.StatusForbidden, USERErrJWTInvalid)
 			}
 			token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -63,7 +60,7 @@ func USERJWTFROMHEADER (config JWTConfig)echo.MiddlewareFunc{
 				c.Set("email", email)
 				return next(c)
 			}
-			return c.JSON(http.StatusForbidden,NewError(USERErrJWTInvalid))
+			return c.JSON(http.StatusForbidden, NewError(USERErrJWTInvalid))
 		}
-	 }
+	}
 }
